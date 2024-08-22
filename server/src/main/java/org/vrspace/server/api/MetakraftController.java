@@ -75,7 +75,7 @@ public class MetakraftController extends ApiBase {
 
     MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
     map.add("prompt", prompt);
-    map.add("quality", quality);
+    map.add("quality", "advanced");
     HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers());
 
     RestTemplate restTemplate = new RestTemplate();
