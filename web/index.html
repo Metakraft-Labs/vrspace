@@ -1,0 +1,276 @@
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<!-- 
+based on https://templatemo.com/tm-543-breezed
+thanks folks!
+ -->
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <meta http-equiv="encoding" content="utf-8">
+  <meta http-equiv="Content-Language" content="en-US" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  
+  <title>VRSpace.org:Home</title>
+  
+  <link rel="icon" href="favicon-32.png" sizes="32x32">
+  <link rel="icon" href="favicon-128.png" sizes="128x128">
+  <link rel="icon" href="favicon-512.png" sizes="512x512">
+  
+  <link href="https://fonts.googleapis.com/css?family=Raleway:100,200,300,400,500,600,700,800,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="main.css">
+  
+  <link rel="manifest" href="manifest.json" />
+  
+  <!--
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+  <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+  <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+  <script src="https://cdn.babylonjs.com/havok/HavokPhysics_umd.js"></script>
+  -->
+  <script src="/babylon/js/lib/babylon.js"></script>
+  <script src="/babylon/js/lib/babylonjs.loaders.min.js"></script>
+  <script src="/babylon/js/lib/babylon.gui.min.js"></script>
+  <script src="/babylon/js/lib/babylonjs.materials.min.js"></script>
+  <script src="/babylon/js/lib/babylonjs.proceduralTextures.min.js"></script>
+  <script src="/babylon/js/lib/babylon.dynamicTerrain.min.js"></script>
+  <script src="/babylon/js/lib/annyang-2.6.1.min.js"></script>
+  <script src="/babylon/js/lib/HavokPhysics_umd.js"></script>
+
+  <script src="/babylon/js/vrspace-min.js" type="module"></script>
+  <script src="/babylon/js/lib/perlin.js"></script>
+    
+
+</head>
+<body>
+
+  <!-- canvas is not focusable by default, tabIndex does that -->
+  <div>
+    <canvas id="renderCanvas" touch-action="none" tabIndex=0></canvas>
+  </div>
+
+  <header>
+      <div>
+          <a href="index.html" class="logo">
+              VRSpace.org
+          </a>
+          <nav>
+              <ul>
+                  <li><a href="#about">About</a></li>
+                  <li><a href="https://github.com/jalmasi/vrspace" target="_blank">GitHub</a></li>
+                  <li><a href="https://redmine.vrspace.org/projects/vrspace-org/wiki" target="_blank">Wiki</a></li>
+                  <li><a href="https://redmine.vrspace.org/projects/vrspace-org/boards" target="_blank">Forums</a></li>
+                  <li><a href="docs/jsdoc/index.html" target="_blank">jsdoc</a></li>
+                  <li><a href="docs/javadoc/index.html?overview-summary.html" target="_blank">javadoc</a></li>
+                  <li><a href="/swagger-ui.html" target="_blank">API doc</a></li>
+              </ul>
+          </nav>
+      </div>
+  </header>
+
+  <div class="version" id="version">version</div>
+  <div class="scroll-down"><a href="#about">&nbsp;<i class="fa fa-arrow-down"></i>&nbsp;</a></div>
+  <!-- ***** Main Banner Area End ***** -->
+
+  <!-- ***** About Area Starts ***** -->
+  <section class="section" id="about">
+      <div class="container">
+          <div class="row">
+              <div class="col-lg-6 col-md-6 col-xs-12">
+                  <div class="left-text-content">
+                      <div class="section-heading">
+                          <h6>About VRSpace.org</h6>
+                          <h2>Free and open VR for the web.</h2>
+                      </div>
+                      <div class="row">
+                          <div class="col-md-6 col-sm-6">
+                              <div class="feature">
+                                  <h4>Free, Open Source</h4>
+                              </div>
+                          </div>
+                          <div class="col-md-6 col-sm-6">
+                              <div class="feature">
+                                  <h4>Cross-platform</h4>
+                              </div>
+                          </div>
+                          <div class="col-md-6 col-sm-6">
+                              <div class="feature">
+                                  <h4>Community-driven</h4>
+                              </div>
+                          </div>
+                          <div class="col-md-6 col-sm-6">
+                              <div class="feature">
+                                  <h4>Multiuser-ready</h4>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-lg-6 col-md-6 col-xs-12">
+                  <div class="right-text-content">
+                      <p><strong>VRSpace.org</strong> is Web Virtual/Augmented Reality (WebXR) platform.</p>
+                      <p>On the web, ready to use with any WebXR enabled browser, on any device.</p>
+                      <p><strong>Free and open</strong>, ready to help you make your own virtual worlds!</p>
+                      <p>Oh, and it's <strong>multi-user</strong> enabled, so invite your friends over.</p>
+                      <p>And, and it's <strong>voice</strong> enabled, so you can chat with your friends. (the browser will ask for your permission to use microphone)</p>
+                      <p><br></p>
+                      <p>To <strong>navigate</strong> in 3D space, drag mouse/finger, use arrow keys or WASD. </p>
+                      <p>To <strong>enter VR</strong>, click/tap goggles icon on the right side of 3D view.</p>
+                      <p><br></p>
+                      <p>First step is to <strong>choose your avatar</strong> from the list of available avatars. Just select the button by avatar's name.</p>
+                      <p>Once selected, the avatar will load, and list of available animations will appear on the left side. In VR, the avatar immediately mimics your movements - that's how other users will see you.</p>
+                      <p><strong>Or,</strong> choose a video avatar, and join as yourself! (the browser will ask for your permission to use camera)</p>
+                      <p><strong>Or,</strong> create your custom avatar. (provided by Ready Player Me, and set <strong>cookies</strong>)</p>
+                      <p><br></p>
+                      <p>Once you've choosen your avatar, you can <strong>enter a virtual world</strong>.</p>
+                      <p><br></p>
+                      <p><strong>Have fun!</strong></p>
+                      <p><br></p>
+                      <p>We do not collect any kind of personal data and do not track you in any way. We also do not provide any kind of user protection or waranty.</p>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </section>
+
+  <!-- ***** Footer Start ***** -->
+  <footer>
+      <div class="container">
+          <div class="row">
+              <div class="col-lg-6 col-xs-12">
+              </div>
+              <div class="col-lg-6 col-xs-12">
+                  <div class="right-text-content">
+                      <ul>
+                          <li><p>Contact</p></li>
+                          <li><a rel="nofollow" href="https://ie.linkedin.com/in/josip-almasi-8309286" target="_new"><i class="fa fa-linkedin fa-lg"></i></a></li>
+                          <li><p></p></li>
+                          <li><p>Follow Us</p></li>
+                          <li><a rel="nofollow" href="https://fb.com/vrspace.org" target="_new"><i class="fa fa-facebook fa-lg"></i></a></li>
+                          <li><a rel="nofollow" href="https://github.com/jalmasi/vrspace" target="_new"><i class="fa fa-github fa-lg"></i></a></li>
+                          <!--
+                          TODO: <div class="fb-like" data-href="https://www.facebook.com/vrspace.org" data-layout="button_count" data-action="like" data-show-faces="true" data-share="true"></div>
+                           -->
+                      </ul>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </footer>
+
+  <div id="videos" hidden>
+  </div>
+
+  <script>
+  var canvas = document.getElementById("renderCanvas"); // Get the canvas element
+  //focus canvas so we get keyboard events, otherwise need to click on it first
+  canvas.focus();
+  var engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
+  var scene;
+  var anonymousAllowed = true;
+
+  import("../babylon/avatar-selection.js").then( (module) =>{
+  
+    var world = module.WORLD;
+    //world.VRSPACEUI.contentBase='https://www.vrspace.org/';
+
+    // drag and drop support:    
+    document.getElementById('renderCanvas').ondragover = (e) => {
+      return false;
+    }
+    document.getElementById('renderCanvas').ondrop = (e) => {
+      e.preventDefault();
+      for ( var i = 0; i < e.dataTransfer.items.length; i++ ) {
+        var item = e.dataTransfer.items[i];
+        if ( item.kind == 'string' && 'text/plain' == item.type) {
+          // say that
+          item.getAsString(s=>{
+            say(s);
+          });
+        }
+      };
+    }
+
+    world.init(engine, 'avatar').then((s) => {
+      scene = s;
+      world.createSelection((avatar)=>{
+        console.log("Selected avatar: "+avatar.getUrl());
+      });
+      world.showPortals();
+      engine.resize();
+      canvas.focus();
+      world.afterExit = () => {
+        console.log('Exit:'+world.worldManager.error);
+      }
+    });
+    
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.responseType = "text";
+    xmlHttp.onreadystatechange = function() {
+      if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+        var info = JSON.parse(xmlHttp.responseText);
+        // some useful stats
+        // info.git.build.version
+        // info.git.build.time
+        // info.git.commit.id.abbrev
+        // info.git.commit.message.short
+        // info.git.total.commit.count
+        var text = info.git.build.version+' '+info.git.build.time+' '+info.git.commit.id.abbrev+' '+info.git.commit.message.short;
+        document.getElementById("version").innerHTML = 'v'+text;
+      }
+    }
+    xmlHttp.open("GET", "/actuator/info", true); // true for asynchronous
+    xmlHttp.send(null);
+  
+  })
+  
+  //Watch for browser/canvas resize events
+  var resizing = false;
+  var tmp = window.devicePixelRatio;
+  window.addEventListener("resize", () => {
+    if ( ! resizing ) {
+      // resize engine after browser has resized
+      setTimeout( () => {
+        resizing = true;
+        engine.resize();
+        // fire the event again to move Enter VR button to proper place
+        // (seems it calculates position immediately)
+        window.dispatchEvent(new Event('resize'));
+        resizing = false;
+      }, 200); // CHECKME 100ms enough?
+    }
+  });
+  
+  
+  //prevent arrow keys and space from scroling the page
+  //only if webgl canvas is focused
+  window.addEventListener("keydown", function(e) {
+     if( document.activeElement === canvas && [32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+         e.preventDefault();
+     }
+  }, false);
+  
+  function debugOnOff() {
+    console.log("Debug: "+scene.debugLayer.isVisible());
+    if ( scene.debugLayer.isVisible() ) {
+      scene.debugLayer.hide();
+    } else {
+      scene.debugLayer.show();
+    }
+  }
+  
+	onload = (event) => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register("serviceworker.js");
+    }
+	};
+  </script>
+
+  <div id="iframe" style="position:absolute;top:0px;width:100%;">
+    <iframe id="customAvatarFrame" allow="camera *; microphone *" width="100%" height="800" hidden="true"></iframe>
+  </div>
+
+</body>
+</html>

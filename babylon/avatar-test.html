@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+    <head>
+      <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+      <meta content="utf-8" http-equiv="encoding">
+    <title>VRSpace Avatar test</title>
+    ﻿<style type="text/css">
+    html, body {
+      width: 100%;
+      height:100%;
+      margin: 0px;
+      padding: 0px;
+    }
+    canvas {
+      width: 98%;
+      height:96%;
+      padding-left: 0;
+      padding-right: 0;
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
+    }
+    </style>﻿
+        <script src="https://preview.babylonjs.com/babylon.js"></script>
+        <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+        <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
+        <!-- 
+        <script src="./js/lib/babylon.js"></script>
+        <script src="./js/lib/babylonjs.postProcess.min.js"></script>
+        <script src="./js/lib/babylonjs.loaders.min.js"></script>
+        <script src="./js/lib/babylon.gui.min.js"></script>
+        -->
+        <script src="./js/avatar/humanoid-avatar.js"  type="module"></script>
+    </head>
+  <body>
+
+  <canvas id="renderCanvas" touch-action="none"></canvas>
+
+<script>
+var character;
+
+var canvas = document.getElementById("renderCanvas"); // Get the canvas element
+//canvas.style.width = '90%';
+//canvas.style.height = '60%';
+var engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
+var shadowGenerator;
+var camera;
+var angle = 0;
+var characters = [];
+var instances = [];
+var crouch = false;
+var userName;
+var rest = false;
+var world;
+var vrspaceUI;
+var worldManager;
+var avatarController = null;
+
+import('./js/vrspace-min.js').then( (ui) => {
+  vrspaceUI = ui;
+  import("./avatar-test.js").then( (module) =>{
+    world = module.WORLD;
+
+    document.getElementById('nickname').addEventListener('input', (e)=>{
+  	  userName = e.target.value;
+  	  if ( character ) {
+  		  character.setName(userName);
+  	  }
+  	});
+
+    document.getElementById('wrote').addEventListener('input', (e)=>{
+      let text = e.target.value;
+      if ( character ) {
+        character.write(text);
+      }
+    });
+
+    world.init(engine, 'avatar').then((s) => {
+      scene = s;
+      worldManager = new ui.WorldManager(world);
+      
+      ui.VRSPACEUI.listMatchingFiles( '../content/char/', (folders) => {
+        for ( var f = 0; f < folders.length; f++ ) {
+          ui.VRSPACEUI.listCharacters( folders[f].url()+'/', (avatars) => {
+            for ( var i=0; i < avatars.length; i++ ) {
+              var index = characters.length;
+              characters.push(avatars[i]);
+              var sel = document.getElementById("avatarName");
+              sel.children[0].disabled = true;
+              var opt = document.createElement('option');
+              opt.appendChild( document.createTextNode(index+". "+avatars[i].url()));
+              opt.value=index;
+              sel.appendChild(opt);
+            }
+          })
+        }
+        
+        var leftSphere = BABYLON.MeshBuilder.CreateSphere("leftTarget", {diameter:0.2}, scene);
+        var rightSphere = BABYLON.MeshBuilder.CreateSphere("rightTarget", {diameter:0.2}, scene);
+        leftSphere.position = new BABYLON.Vector3(-0.3,1.5,-0.4)
+        rightSphere.position = new BABYLON.Vector3(0.3,1.8,-0.1)
+
+        scene.onPointerPick = (e,p) => {
+          if ( ! character ) {
+            return;
+          }
+          if ( p.pickedMesh.name != "ground" ) {
+            if ( crouch ) {
+              crouch = false;
+              character.rise(0.3);
+              // CHECKME need another way to test standUp()
+              //character.standUp();
+            } else {
+              crouch = true;
+              character.crouch(0.3);
+            }
+          }
+          if ( p.pickedMesh == leftSphere ) {
+            character.body.leftArm.pointerQuat = new BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Z,angle);
+            console.log("Angle: "+angle);
+            angle += .1;
+            //character.userHeight = 2.5;
+            //character.resize();
+            //character.crouch(0.5);
+            character.reachFor(character.body.leftArm, leftSphere.position);
+            character.lookAt(leftSphere.position);
+          }
+          if ( p.pickedMesh == rightSphere ) {
+            character.body.rightArm.pointerQuat = new BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Z,angle);
+            console.log("Angle: "+angle);
+            angle += .1;
+            //character.userHeight = 1.2;
+            //character.resize();
+            //character.standUp();
+            //character.rise(0.5);
+            character.reachFor(character.body.rightArm, rightSphere.position);
+            character.lookAt(rightSphere.position);
+          }
+        }
+        
+      });
+    });
+  })
+})
+
+var animationButtons = function(avatar) {
+  var animations = document.getElementById("animations");
+  var html = ""
+  var playing = null;
+  var groups = avatar.getAnimationGroups();
+  //var groups = avatar.character.animationGroups;
+  console.log("Animation groups", groups);
+  for ( var i = 0; i < groups.length; i++ ) {
+    var group = groups[i];
+    //console.log("Animation group: "+group.name+" "+group.isPlaying);
+    var checked = "";
+    if ( group.isPlaying && group.loopAnimation ) {
+      checked="checked";
+      playing = group.name;
+    }
+    html = html +'<div style="background:rgba(100,100,100,0.5);color:white;"><input type="checkbox" '+checked+' onClick="startAnimation(\''+group.name+'\')"/>'+group.name+'</div>';
+  }
+  if ( playing ) {
+    html += '<div><button onClick="save(\''+playing+'\')">Save</button></div>';
+  }
+  animations.innerHTML = html;
+}
+
+var save = (groupName) => {
+  console.log("Saving group "+groupName);
+  character.saveAnimations(groupName);
+}
+var startAnimation = function(animationName) {
+  character.stopAnimation(animationName, true);
+  character.startAnimation(animationName, true);
+  // TODO don't draw buttons every time?
+  animationButtons(character);
+}
+
+var loadAnimation = () => {
+  var url = document.getElementById("animationUrl").value;
+  character.loadAnimations(url, () => animationButtons(character));
+}
+
+var loadAvatar = () => {
+  import('./js/vrspace-min.js').then( (module) => {
+    var url = document.getElementById("avatarUrl").value;
+    var folder = new module.ServerFile(url);
+    console.log(folder);
+    var loaded = new module.HumanoidAvatar(scene, folder, shadowGenerator);
+    loaded.debug = true;
+    loaded.load((c) => {
+      angle = 0;
+      character = loaded.replace(character);
+      animationButtons(character);
+      crouch = false;
+      loaded.setName(userName);
+      createController();
+    } );
+  });
+};
+
+var replaceAvatar = () => {
+  import('./js/avatar/humanoid-avatar.js').then( (module) => {
+	  module.HumanoidAvatar.use3dText = document.getElementById('text3d').checked;
+    
+    var index = document.getElementById("avatarName").value;
+    var folder = characters[index];
+    console.log(folder);
+    var loaded = new module.HumanoidAvatar(scene, folder, shadowGenerator);
+    loaded.debug = true;
+    loaded.load((c) => {
+      angle = 0;
+      character = loaded.replace(character);
+      animationButtons(character);
+      crouch = false;
+      loaded.setName(userName);
+      createController();
+    } );
+  });
+};
+
+var createController = () => {
+  if ( avatarController ) {
+    avatarController.dispose();
+  }
+  avatarController = new vrspaceUI.AvatarController(worldManager, character);
+}
+var instantiate = () => {
+  import('./js/avatar/humanoid-avatar.js').then( (module) => {
+    var index = document.getElementById("avatarName").value;
+    var folder = characters[index];
+    var loaded = new module.HumanoidAvatar(scene, folder, shadowGenerator);
+    loaded.returnToRest = rest;
+    loaded.debug = false;
+    loaded.load((c) => {
+      instances.push(loaded);
+      loaded.setName(userName);
+      loaded.setPosition(new BABYLON.Vector3(instances.length,0,0));
+    } );
+  });
+}
+
+var remove = () => {
+  if ( instances.length > 0 ) {
+    console.log("Removing",instances[instances.length-1]);
+    instances[instances.length-1].dispose();
+    instances.pop();
+  }
+}
+
+function toggleRest() {
+  rest = !rest;
+}
+
+function selectCamera(radio) {
+	console.log(radio.value);
+	if ( "main" === radio.value ) {
+    world.avatarController.showAvatar();
+		scene.activeCamera = world.camera;
+	} else if ( "1p" === radio.value ) {
+    world.avatarController.firstPerson();
+  } else if ( "3p" === radio.value ) {
+    world.avatarController.thirdPerson();
+    avatarController.movement.startTrackingCameraRotation();
+  } else if ( "3p-rot" === radio.value ) {
+    world.avatarController.thirdPerson();
+    avatarController.movement.stopTrackingCameraRotation();
+	}
+	scene.activeCamera.attachControl();
+}
+
+function setPose(pose) {
+	console.log("Setting pose "+pose);
+	character.setPose(pose);
+}
+
+// Watch for browser/canvas resize events
+window.addEventListener("resize", function () {
+    engine.resize();
+});
+
+function debugOnOff() {
+  console.log("Debug: "+scene.debugLayer.isVisible());
+  if ( scene.debugLayer.isVisible() ) {
+    scene.debugLayer.hide();
+  } else {
+    scene.debugLayer.show();
+  }
+}
+
+</script>
+
+<div style="position: absolute;top:10px;left: 20%;">
+  URL:
+  <input title="Enter URL of a GLB (e.g. RPM) avatar here" id="avatarUrl" type="text" onChange="loadAvatar()">
+  or
+  <select id="avatarName" name="avatarName" onChange="replaceAvatar()">
+    <option selected>Avatar</option>
+  </select>
+  <button title="Clone the character" onClick="instantiate()">More</button>
+  <button title="Remove last clone" onClick="remove()">Less</button>
+  <input title="Enforce rest pose on the clone" type="checkbox" onClick="toggleRest()"/>Rest Pose
+</div>
+
+<div style="position: absolute;top:40px;left: 30%;">
+  Pose:
+  <button onClick="setPose('T')">T</button>
+  <button onClick="setPose('A')">A</button>
+  <button onClick="setPose('I')">I</button>
+  Camera:
+  <input type="radio" onclick="selectCamera(this)" id="camera_main" name="camera" value="main" checked>
+  <label for="camera_main">main</label>
+  <input type="radio" onclick="selectCamera(this)" id="camera_1p" name="camera" value="1p">
+  <label for="camera_1p">1st person</label>
+  <input type="radio" onclick="selectCamera(this)" id="camera_3p" name="camera" value="3p">
+  <label for="camera_3p">3rd person</label>
+  <input type="radio" onclick="selectCamera(this)" id="camera_3p-rot" name="camera" value="3p-rot">
+  <label for="camera_3p">3p - rot</label>
+</div>
+
+<div style="position: absolute;top:10px;text-align: left;right:20%;width: 15%; float:right;">
+<input title="URL of an animation, RPM avatars only" id="animationUrl" type="text" onChange="loadAnimation()">
+<div id="animations">
+</div>
+</div>
+
+<div id="loginForm" style="position:absolute;bottom:50px;right:45%;">
+<label for="nickname">Name:</label>
+<input title="Avatar name, displayed over head" id="nickname" type="text">
+<label for="wrote">Say:</label>
+<input title="Text to write" id="wrote" type="text">
+<label for="text3d">3D text:</label>
+<input title="Use 3d Text (requires avatar reload)" id="text3d" type="checkbox">
+</div>
+
+<div style="position:absolute;bottom:10px;right:50%;">
+<button onClick="debugOnOff()">Debug</button>
+</div>
+
+</body>
+</html>

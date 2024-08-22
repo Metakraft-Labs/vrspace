@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.vrspace</groupId>
+		<artifactId>parent</artifactId>
+		<version>0.7.1-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
+  <packaging>pom</packaging> <!-- prevent creation of target folder -->
+	<artifactId>babylon</artifactId>
+	<name>babylon</name>
+	<description>VRSpace.org Babylon.js client</description>
+
+  <profiles>
+    <profile>
+      <!-- daily business - compile, test, build executable -->
+      <id>build</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <!-- clean dist, jsdoc folders -->
+            <artifactId>maven-clean-plugin</artifactId>
+            <configuration>
+              <filesets>
+                <fileset>
+                  <directory>dist</directory>
+                  <followSymlinks>false</followSymlinks>
+                </fileset>
+                <fileset>
+                  <directory>jsdoc</directory>
+                  <followSymlinks>false</followSymlinks>
+                </fileset>
+              </filesets>
+            </configuration>
+          </plugin>
+      
+          <!-- prevent doing anything during install -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <configuration>
+              <skipIfEmpty>true</skipIfEmpty>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-install-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>default-install</id>
+                <phase>none</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <profile>
+      <!-- generate jsdoc, e.g. for web site -->
+      <id>docs</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.0.0</version>
+            <executions>
+              <!-- 
+              run webpack during package phase
+              CHECKME this entire webpack business is likely a dead end 
+              -->
+              <execution>
+                <id>webpack</id>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>webpack</executable>
+                </configuration>
+              </execution>
+              <!-- generate jsdoc during package phase -->
+              <execution>
+                <id>jsdoc</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>jsdoc</executable>
+                  <arguments>
+                    <argument>-r</argument>
+                    <argument>js/ui</argument>
+                    <argument>js/client</argument>
+                    <argument>-d</argument>
+                    <argument>jsdoc</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <profile>
+      <!-- publish the release to npm -->
+      <id>publish</id>
+      <build>
+        <plugins>
+          <!-- do NOT use maven deploy plugin -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </plugin>
+          <!-- but exec npm publish -->
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.0.0</version>
+            <executions>
+              <execution>
+                <id>npm</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>npm</executable>
+                  <arguments>
+                    <argument>publish</argument>
+                    <argument>--access</argument>
+                    <argument>public</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          </plugins>
+          </build>
+          </profile>
+          
+  </profiles>
+
+</project>

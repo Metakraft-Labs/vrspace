@@ -1,0 +1,23 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "org.vrspace.www.twa",
+      "sha256_cert_fingerprints": [
+        "97:96:AC:8E:8C:53:AE:72:22:B8:46:3C:C9:43:6C:01:16:B3:0A:22:87:B6:14:BD:91:64:26:61:50:CD:56:98"
+      ]
+    }
+  },
+  {
+    "relation": [
+      "check_validation"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "org.vrspace.www.twa"
+    }
+  }
+]
