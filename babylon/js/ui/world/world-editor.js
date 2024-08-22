@@ -10,7 +10,7 @@ class SearchForm extends Form {
   }
   init() {
     this.createPanel();
-    this.panel.addControl(this.textBlock("Search Sketchfab:"));
+    this.panel.addControl(this.textBlock("Search Asset Library:"));
 
     this.input = this.inputText('search');
     //this.input.text = 'test'; // skip typing in VR
